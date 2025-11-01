@@ -1,14 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Todo project</title>
-</head>
-<body>
-    <input type="text" placeholder="Todo">
-    <button>search</button>
-    <button>clear</button>
-    
-</body>
+  </head>
+  <body>
+    <form action="" onsubmit="handlesubmit(event)">
+      <input type="text" placeholder="Todo" id="todo" required />
+      <button type="submit">search</button>
+    </form>
+    <button onclick="handleclearall(event)">clear</button>
+    <ul  id="ul"></ul>
+
+    <script>
+      const todo = document.getElementById("todo");
+      const ul = document.getElementById("ul");
+
+      function getTodos() {
+        const todos = localStorage.getItem("todos") || "[]";
+        const oldTodos = JSON.parse(todos);
+        return oldTodos;
+      }
+
+      function handlesubmit(e) {
+        e.preventDefault();
+        if (todo.value.trim()) {
+          const oldTodos = getTodos();
+          localStorage.setItem(
+            "todos",
+            JSON.stringify([...oldTodos, todo.value])
+          );
+        }
+        showTodos();
+        todo.value = "";
+      }
+
+      function showTodos() {
+        const todos = getTodos();
+        ul.innerHTML = "";
+        todos?.forEach((todo, index) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<button onclick="handleDelete(${index})"> Delete </button> ${todo}`;
+          ul.appendChild(li);
+        });
+      }
+      showTodos();
+
+      function handleclearall() {
+        localStorage.clear();
+        showTodos();
+      }
+
+      function handleDelete(index) {
+        const todos = getTodos();
+        const newTodos = todos.filter((ele, i) => i != index);
+        localStorage.setItem("todos", JSON.stringify([...newTodos]));
+        showTodos();
+      }
+    </script>
+  </body>
 </html>
